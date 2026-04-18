@@ -12,10 +12,7 @@ const app = express();
 
 // ─── Middleware ──────────────────────────────────────────────────────────────
 app.use(cors({
-  origin: function(origin, callback) {
-    // Dynamically allow any origin to prevent CORS errors on Vercel's unique URLs
-    callback(null, true);
-  },
+  origin: true,
   credentials: true,
 }));
 app.use(express.json());
