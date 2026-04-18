@@ -34,9 +34,15 @@ app.use('/api/users', require('./routes/users'));
 // Health check
 app.get('/api/health', (req, res) => {
   const dbStatus = mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected';
+  const uriExists = !!process.env.MONGO_URI;
+  const uriMasked = uriExists 
+    ? process.env.MONGO_URI.replace(/\/\/.*:.*@/, '//****:****@') 
+    : 'MISSING';
+
   res.json({
     status: 'OK',
     database: dbStatus,
+    mongo_uri: uriMasked,
     timestamp: new Date()
   });
 });
