@@ -1,0 +1,202 @@
+/* src/index.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --clr-bg:       #0a0f0d;
+    --clr-surface:  #111814;
+    --clr-card:     #161e1a;
+    --clr-border:   #1f2e27;
+    --clr-accent:   #22c55e;
+    --clr-accent2:  #4ade80;
+    --clr-urgent:   #f97316;
+    --clr-muted:    #4a5e52;
+    --clr-text:     #e8f0eb;
+    --clr-subtext:  #7a9982;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background-color: var(--clr-bg);
+    color: var(--clr-text);
+    font-family: 'DM Sans', sans-serif;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--clr-surface); }
+  ::-webkit-scrollbar-thumb { background: var(--clr-border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--clr-muted); }
+}
+
+@layer components {
+  /* ── Layout Shell ─────────────────────────── */
+  .app-shell {
+    @apply flex h-screen overflow-hidden;
+    background: var(--clr-bg);
+  }
+
+  .main-content {
+    @apply flex-1 overflow-y-auto;
+  }
+
+  /* ── Cards ───────────────────────────────── */
+  .card {
+    background: var(--clr-card);
+    border: 1px solid var(--clr-border);
+    @apply rounded-2xl p-5;
+  }
+
+  .card-hover {
+    @apply card transition-all duration-200;
+  }
+  .card-hover:hover {
+    border-color: #2d4a38;
+    box-shadow: 0 0 0 1px #2d4a38, 0 8px 24px rgba(0,0,0,0.4);
+    transform: translateY(-1px);
+  }
+
+  /* ── Buttons ─────────────────────────────── */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl font-medium
+           transition-all duration-150 cursor-pointer select-none;
+  }
+  .btn-primary {
+    @apply btn px-5 py-2.5 text-sm;
+    background: var(--clr-accent);
+    color: #0a0f0d;
+  }
+  .btn-primary:hover { background: var(--clr-accent2); }
+  .btn-primary:active { transform: scale(0.98); }
+
+  .btn-ghost {
+    @apply btn px-4 py-2 text-sm;
+    color: var(--clr-subtext);
+    border: 1px solid var(--clr-border);
+  }
+  .btn-ghost:hover {
+    color: var(--clr-text);
+    border-color: var(--clr-muted);
+    background: rgba(255,255,255,0.03);
+  }
+
+  .btn-danger {
+    @apply btn px-4 py-2 text-sm;
+    background: rgba(239,68,68,0.12);
+    color: #f87171;
+    border: 1px solid rgba(239,68,68,0.2);
+  }
+  .btn-danger:hover { background: rgba(239,68,68,0.2); }
+
+  /* ── Form Inputs ─────────────────────────── */
+  .input {
+    @apply w-full rounded-xl px-4 py-2.5 text-sm outline-none transition-all duration-150;
+    background: var(--clr-surface);
+    border: 1px solid var(--clr-border);
+    color: var(--clr-text);
+  }
+  .input::placeholder { color: var(--clr-muted); }
+  .input:focus {
+    border-color: var(--clr-accent);
+    box-shadow: 0 0 0 3px rgba(34,197,94,0.12);
+  }
+
+  .label {
+    @apply block text-xs font-medium mb-1.5;
+    color: var(--clr-subtext);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  /* ── Badges ──────────────────────────────── */
+  .badge {
+    @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium;
+  }
+  .badge-urgent {
+    @apply badge;
+    background: rgba(249,115,22,0.15);
+    color: #fb923c;
+    border: 1px solid rgba(249,115,22,0.25);
+  }
+  .badge-normal {
+    @apply badge;
+    background: rgba(34,197,94,0.1);
+    color: var(--clr-accent2);
+    border: 1px solid rgba(34,197,94,0.2);
+  }
+  .badge-category {
+    @apply badge;
+    background: rgba(255,255,255,0.05);
+    color: var(--clr-subtext);
+    border: 1px solid var(--clr-border);
+  }
+
+  /* ── Online dot ───────────────────────────── */
+  .online-dot {
+    @apply inline-block w-2 h-2 rounded-full;
+    background: var(--clr-accent);
+    animation: pulseDot 1.5s ease-in-out infinite;
+  }
+  .offline-dot {
+    @apply inline-block w-2 h-2 rounded-full;
+    background: var(--clr-muted);
+  }
+
+  /* ── Sidebar ─────────────────────────────── */
+  .sidebar {
+    @apply flex flex-col h-full;
+    width: 260px;
+    min-width: 260px;
+    background: var(--clr-surface);
+    border-right: 1px solid var(--clr-border);
+  }
+
+  .nav-link {
+    @apply flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-150 mx-2;
+    color: var(--clr-subtext);
+  }
+  .nav-link:hover {
+    background: rgba(255,255,255,0.04);
+    color: var(--clr-text);
+  }
+  .nav-link.active {
+    background: rgba(34,197,94,0.1);
+    color: var(--clr-accent2);
+    border: 1px solid rgba(34,197,94,0.15);
+  }
+
+  /* ── Page Header ─────────────────────────── */
+  .page-header {
+    @apply px-6 py-5 border-b;
+    border-color: var(--clr-border);
+  }
+  .page-title {
+    @apply text-2xl font-display font-bold;
+    color: var(--clr-text);
+  }
+
+  /* ── Empty State ─────────────────────────── */
+  .empty-state {
+    @apply flex flex-col items-center justify-center py-16 text-center;
+    color: var(--clr-muted);
+  }
+
+  /* ── Spinner ─────────────────────────────── */
+  .spinner {
+    @apply animate-spin rounded-full border-2;
+    border-color: var(--clr-border);
+    border-top-color: var(--clr-accent);
+  }
+}
+
+/* ── Animations ───────────────────────────────── */
+@keyframes fadeIn    { from { opacity: 0 } to { opacity: 1 } }
+@keyframes slideUp   { from { opacity: 0; transform: translateY(14px) } to { opacity: 1; transform: translateY(0) } }
+@keyframes pulseDot  { 0%,100% { transform: scale(1); opacity:1 } 50% { transform: scale(1.5); opacity:.5 } }
+
+.animate-fade-in  { animation: fadeIn  0.35s ease both; }
+.animate-slide-up { animation: slideUp 0.35s ease both; }
