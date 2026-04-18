@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
 import useGeolocation from '../hooks/useGeolocation';
 import { CATEGORIES, CATEGORY_ICONS } from '../utils/helpers';
-import { getSocket } from '../utils/socket';
 import toast from 'react-hot-toast';
 
 const CreateRequest = () => {
@@ -109,9 +108,7 @@ const CreateRequest = () => {
     try {
       const { data } = await api.post('/requests', form);
 
-      // Notify nearby users via socket
-      const socket = getSocket();
-      socket.emit('request:new', data.request);
+      // Serverless Migration: socket emit removed
 
       toast.success('Request posted!');
       navigate('/feed');

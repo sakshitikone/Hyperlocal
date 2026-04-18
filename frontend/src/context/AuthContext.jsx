@@ -1,7 +1,5 @@
-// src/context/AuthContext.jsx — Global auth state with JWT + socket lifecycle
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import api from '../utils/api';
-import { connectSocket, disconnectSocket } from '../utils/socket';
 
 const AuthContext = createContext(null);
 
@@ -30,12 +28,9 @@ export const AuthProvider = ({ children }) => {
     verify();
   }, []); // eslint-disable-line
 
-  // Connect socket when user logs in
+  // Connect socket when user logs in (Removed for Serverless migration)
   useEffect(() => {
-    if (user?._id) {
-      connectSocket(user._id);
-    }
-    return () => { if (!user) disconnectSocket(); };
+    // Socket connection removed
   }, [user]);
 
   const login = useCallback(async (email, password) => {
@@ -61,7 +56,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('user');
     setToken(null);
     setUser(null);
-    disconnectSocket();
+    // disconnectSocket(); // Removed for serverless
   }, []);
 
   const updateUser = useCallback((updatedUser) => {

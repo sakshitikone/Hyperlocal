@@ -2,7 +2,6 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import api from '../utils/api';
-import { getSocket } from '../utils/socket';
 import { useAuth } from '../context/AuthContext';
 import { timeAgo, getInitials } from '../utils/helpers';
 import toast from 'react-hot-toast';
@@ -139,42 +138,28 @@ const ChatPage = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  /* Socket events */
+  /* HTTP Polling for real-time messages (Serverless workaround) */
   useEffect(() => {
-    const socket = getSocket();
+    if (!activeUserId) return;
 
-    // Incoming message
-    socket.on('message:receive', (msg) => {
-      if (msg.sender?._id === activeUserId || msg.sender === activeUserId) {
-        setMessages((prev) => [...prev, msg]);
-      }
-      // Update last message in conversation list
-      setConversations((prev) => {
-        const senderId = msg.sender?._id || msg.sender;
-        const exists   = prev.find((c) => (c._id?._id || c._id) === senderId);
-        if (exists) {
-          return prev.map((c) =>
-            (c._id?._id || c._id) === senderId ? { ...c, lastMessage: msg } : c
-          );
-        }
-        return prev;
-      });
-    });
-
-    // Typing indicators
-    socket.on('typing:start', ({ senderId }) => {
-      if (senderId === activeUserId) setTyping(true);
-    });
-    socket.on('typing:stop', ({ senderId }) => {
-      if (senderId === activeUserId) setTyping(false);
-    });
-
-    return () => {
-      socket.off('message:receive');
-      socket.off('typing:start');
-      socket.off('typing:stop');
+    const poll = async () => {
+      try {
+        const { data } = await api.get(`/messages/${activeUserId}`);
+        // Only update if new messages arrived to avoid flicker/jumping
+        setMessages((prev) => {
+          if (!data.messages) return prev;
+          if (data.messages.length > prev.length) return data.messages;
+          return prev;
+        });
+      } catch { /* silent fail on polling */ }
     };
+
+    // Poll every 3 seconds
+    const intervalId = setInterval(poll, 3000);
+    return () => clearInterval(intervalId);
   }, [activeUserId]);
+
+  /* Socket events removed for Serverless Migration */
 
   /* Send message */
   const handleSend = useCallback(async () => {
@@ -205,9 +190,7 @@ const ChatPage = () => {
       // Replace optimistic with real
       setMessages((prev) => prev.map((m) => m.optimistic ? data.message : m));
 
-      // Emit via socket for real-time delivery
-      const socket = getSocket();
-      socket.emit('message:send', { receiverId: activeUserId, message: data.message });
+      // Real-time delivery happens via HTTP polling now
     } catch {
       toast.error('Failed to send');
       setMessages((prev) => prev.filter((m) => !m.optimistic));
@@ -219,12 +202,7 @@ const ChatPage = () => {
   /* Typing emit */
   const handleInputChange = (e) => {
     setInput(e.target.value);
-    const socket = getSocket();
-    socket.emit('typing:start', { receiverId: activeUserId, senderId: user._id, senderName: user.name });
-    clearTimeout(typingTimerRef.current);
-    typingTimerRef.current = setTimeout(() => {
-      socket.emit('typing:stop', { receiverId: activeUserId, senderId: user._id });
-    }, 1500);
+    // Typing indicator removed for Serverless Migration
   };
 
   const handleKeyDown = (e) => {

@@ -5,7 +5,6 @@ import useGeolocation from '../hooks/useGeolocation';
 import RequestCard from '../components/RequestCard';
 import { CATEGORIES } from '../utils/helpers';
 import toast from 'react-hot-toast';
-import { getSocket } from '../utils/socket';
 import { useAuth } from '../context/AuthContext';
 
 const RADII = [{ label: '1 km', value: 1000 }, { label: '5 km', value: 5000 }, { label: '10 km', value: 10000 }, { label: 'Any', value: 50000 }];
@@ -40,15 +39,9 @@ const RequestFeed = () => {
 
   useEffect(() => { fetchRequests(); }, [fetchRequests]);
 
-  // Listen for new requests via socket
+  // Listen for new requests via HTTP polling could go here
   useEffect(() => {
-    const socket = getSocket();
-    socket.on('request:notification', (data) => {
-      if (data.request) {
-        setRequests((prev) => [data.request, ...prev]);
-      }
-    });
-    return () => socket.off('request:notification');
+    // In a production serverless app, you might poll `/api/requests` here
   }, []);
 
   const handleRespond = async (id) => {
